@@ -1,11 +1,11 @@
-function plotUlogs(varargin)
+function plotUlog(varargin)
 % Inputs:
 %    arg1 - File name of .ulog file or Folder name of already created csv files location
 %    arg2 - Folder name description
 %
 % Example:
-%    plotUlogs("log001.ulg","Test1")
-%    plotUlogs("001_Test1\")
+%    plotUlogs('log/log_26_2018-11-28-16-16-22.ulg')
+%    plotUlogs('out/log_26_2018-11-28-16-16-22/')
 %
 % Other m-files required: checkFile.m, findMax.m
 % See also: plotAttitudeControl, plotAltitudeControl, plotPositionControl, plotPower, plotSensorData
@@ -20,64 +20,61 @@ input_folderName = false;
 argnum = length(varargin);
 arg1 = varargin{1};
 % Check if first input argument is .ulg file
-disp("arg1")
+disp(arg1)
 disp(argnum)
 try
     C=strsplit(arg1,'.');
-    if(C{2} == "ulg")
-        ulogFileName = varargin{1}
-       D = strsplit(ulogFileName,'.');
-       E =strsplit(D{1}, "log");
-        input_ulogNum = E{2};
-        % Check if descriptive folder name supplied
+    if(strcmp(C{2},'ulg')==1)
+        ulogFilePath = varargin{1}
+        ulogFileName = strsplit(ulogFilePath,'/')
+        ulogFileName = ulogFileName{2};
+        D = strsplit(ulogFileName,'.');
+        ulogFilename_nosuf = D{1}  %没有后缀的日志名称
+    
+        outfolderName = sprintf('out/%s', ulogFilename_nosuf);
         
-        if(argnum>1)
-            arg2 = varargin{2};
-            folderName = sprintf("%s_%s", input_ulogNum, arg2)
-            disp(folderName);
+        if(mkdir(outfolderName)==1)
+            cmd = sprintf('ulog2csv %s -o %s', ulogFilePath, outfolderName);
+            disp('Covnerting ulg to csv...'); system(cmd);
         else
-            folderName = input_ulogNum
+            disp('Folder exists')
         end
-        %if(~checkFile(ulogFileName)) return; end;
-        cmd = sprintf("mkdir %s", folderName);
-        disp(cmd);
-        if(system(cmd)==0)
-            cmd = sprintf("ulog2csv %s -o %s", ulogFileName, folderName);
-            disp("Covnerting ulg to csv..."); system(cmd);
-        else
-            disp("Folder exists")
-        end
-        folderName = sprintf("%s/",folderName);
+        
+        outfolderName = sprintf('%s/',outfolderName);
     end
 catch
     % First argument is folder name
-    folderName = arg1;
+    outfolderName = arg1;
+    ulogFilename_nosuf = strsplit(outfolderName,'/');
+    ulogFilename_nosuf = ulogFilename_nosuf{2};
 end
 % Split folder name with leading number for searching file name
-if(strfind(folderName,'_')>0)
-    F = strsplit(folderName,'_');
-     fnum = F{1};
-else
-    F = strsplit(folderName,'/');
-     fnum = F{1};
+% if(strfind(folderName,'/')>0)
+%       F = strsplit(folderName,'/');
+%      ulogFileName = F{1};
+    
+% elseif(strfind(folderName,'_')>0)
+%   F = strsplit(folderName,'_');
+%      ulogFileName = F{1};
+% end
 
-end
-disp(folderName);
+disp(outfolderName);
+
 fnames = dir('folderName');
-fname_att = sprintf("%slog%s_vehicle_attitude_0.csv",folderName, fnum);
-fname_att_sp = sprintf("%slog%s_vehicle_attitude_setpoint_0.csv",folderName, fnum);
-fname_lp = sprintf("%slog%s_vehicle_local_position_0.csv",folderName, fnum);
-fname_lp_sp = sprintf("%slog%s_vehicle_local_position_setpoint_0.csv",folderName, fnum);
-fname_flow = sprintf("%slog%s_optical_flow_0.csv",folderName, fnum);
-fname_sens = sprintf("%slog%s_sensor_combined_0.csv",folderName, fnum);
-fname_debug_vect = sprintf("%slog%s_debug_vect_0.csv",folderName, fnum);
-fname_dist = sprintf("%slog%s_distance_sensor_0.csv",folderName, fnum);
-fname_input_rc = sprintf("%slog%s_input_rc_0.csv",folderName, fnum);
-fname_power_sys = sprintf("%slog%s_system_power_0.csv",folderName, fnum);
-fname_batt_sts = sprintf("%slog%s_battery_status_0.csv",folderName, fnum);
-fname_air_data = sprintf("%slog%s_vehicle_air_data_0.csv",folderName, fnum);
-fname_land_detect = sprintf("%slog%s_vehicle_land_detected_0.csv",folderName, fnum);
-fname_v_status = sprintf("%slog%s_vehicle_status_0.csv",folderName, fnum);
+fname_att = sprintf('%s%s_vehicle_attitude_0.csv',outfolderName, ulogFilename_nosuf);
+fname_att_sp = sprintf('%s%s_vehicle_attitude_setpoint_0.csv',outfolderName, ulogFilename_nosuf);
+fname_lp = sprintf('%s%s_vehicle_local_position_0.csv',outfolderName, ulogFilename_nosuf);
+fname_lp_sp = sprintf('%s%s_vehicle_local_position_setpoint_0.csv',outfolderName, ulogFilename_nosuf);
+fname_flow = sprintf('%s%s_optical_flow_0.csv',outfolderName, ulogFilename_nosuf);
+fname_sens = sprintf('%s%s_sensor_combined_0.csv',outfolderName, ulogFilename_nosuf);
+fname_debug_vect = sprintf('%s%s_debug_vect_0.csv',outfolderName, ulogFilename_nosuf);
+fname_dist = sprintf('%s%s_distance_sensor_0.csv',outfolderName, ulogFilename_nosuf);
+fname_input_rc = sprintf('%s%s_input_rc_0.csv',outfolderName, ulogFilename_nosuf);
+fname_power_sys = sprintf('%s%s_system_power_0.csv',outfolderName, ulogFilename_nosuf);
+fname_batt_sts = sprintf('%s%s_battery_status_0.csv',outfolderName, ulogFilename_nosuf);
+fname_air_data = sprintf('%s%s_vehicle_air_data_0.csv',outfolderName, ulogFilename_nosuf);
+fname_land_detect = sprintf('%s%s_vehicle_land_detected_0.csv',outfolderName, ulogFilename_nosuf);
+fname_v_status = sprintf('%s%s_vehicle_status_0.csv',outfolderName, ulogFilename_nosuf);
 
 %% Check files
 data_att_avail = true; data_att_sp_avail = true; data_lp_avail = true; data_lp_sp_avail = true; data_dbg_vect_avail = true; data_flow_avail = true;
@@ -198,9 +195,9 @@ end
 plotAttitudeControl(time_att, att_rpy, att_q, ...
     time_att_sp, att_rpy_sp, ...
     time_input_rc, input_rc, ...
-    folderName);
+    outfolderName);
 %% Plot raw sensor data
-plotSensorData(time_sensor, gyro_xyz, acc_xyz, folderName);
+plotSensorData(time_sensor, gyro_xyz, acc_xyz, outfolderName);
 %% Plot for Z axis data
 plotAltitudeControl(time_lp, lp_xyz(:,3), lp_Vxyz(:,3), dist_z, dist_vz, ...
     time_lp_sp, lp_sp_xyz(:,3), lp_sp_Vxyz(:,3), ...
@@ -209,18 +206,18 @@ plotAltitudeControl(time_lp, lp_xyz(:,3), lp_Vxyz(:,3), dist_z, dist_vz, ...
     time_air_data, air_alt_meter, ...
     time_land_detect, land_detect, ...
     time_v_status, v_status, ...
-    folderName);
+    outfolderName);
 %% Plot for x, y, z axis data
 plotPositionControl(time_lp, lp_xyz, lp_Vxyz, ...
     time_lp_sp, lp_sp_xyz, lp_sp_Vxyz, ...
     time_flow, flow_int_xy, ...
     time_input_rc, input_rc, ...
     time_v_status, v_status, ...
-    folderName);
+    outfolderName);
 %% Plot power source
-%plotPower(time_pwr_sys, pwr_sys_5v, ...
- %   time_batt, batt_V, batt_curr, batt_disch_mah, ...
-  %  folderName);
+plotPower(time_pwr_sys, pwr_sys_5v, ...
+   time_batt, batt_V, batt_curr, batt_disch_mah, ...
+   outfolderName);
 
 %endfunction
 %------------- END OF CODE --------------
