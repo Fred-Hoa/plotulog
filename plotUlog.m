@@ -115,8 +115,8 @@ end
 if(data_lp_avail)
     data_lp = dlmread(fname_lp,',',1,0);
     time_lp = data_lp(:,1)/1000000;
-    lp_xyz =  [ data_lp(:,5)  data_lp(:,6)  data_lp(:,7) ];
-    lp_Vxyz = [ data_lp(:,11) data_lp(:,12) data_lp(:,13)];
+    lp_xyz =  [ data_lp(:,6)  data_lp(:,7)  data_lp(:,8) ];
+    lp_Vxyz = [ data_lp(:,12) data_lp(:,13) data_lp(:,14)];
     lp_yaw = data_lp(:,21); dist_z = data_lp(:,23);  dist_vz = data_lp(:,24);
 else
     time_lp = 0; lp_xyz = [0 0 0]; lp_Vxyz = [0 0 0]; lp_yaw = 0; dist_vz = 0; dist_z = 0;
@@ -181,7 +181,7 @@ else
 end
 if(data_land_detect_avail)
     data_land_detect = dlmread(fname_land_detect, ',',1,0);
-    time_land_detect = data_land_detect(:,1)/1000000; land_detect = [ data_land_detect(:,3) data_land_detect(:,4) data_land_detect(:,5) data_land_detect(:,6) ];
+    time_land_detect = data_land_detect(:,1)/1000000; land_detect = [ data_land_detect(:,3) data_land_detect(:,4) data_land_detect(:,5) ];
 else
     time_land_detect = 0; land_detect = [0 0 0 0];
 end
